@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>To-Do app</title>
+  </head>
+  <body>
+    <div id="ToDo-app"></div>
+
+    <script src="https://cdn.jsdelivr.net/react/0.14.0-rc1/react.js"></script>
+    <script src="https://cdn.jsdelivr.net/react/0.14.0-rc1/react-dom.js"></script>
+    <script>
+
+
+        var ItemForm = React.createClass({
+          PropTypes: {
+            value: React.PropTypes.object.isRequired,
+            onChange: React.PropTypes.func.isRequired,
+            onSubmit: React.PropTypes.func.isRequired,
+          },
+          
+
+          onItemInput : function(e) {
+            this.props.onChange(Object.assign({},this.props.value, {item: e.target.value}));
+          },
+          
+          
+          onSubmit: function(e) {
+            e.preventDefault();
+            this.props.onSubmit();
+          },
+
+
+          render: function() {
+            var errors = this.props.value.errors || {};
+
+            return (
+              React.createElement('form', {onSubmit: this.onSubmit, className: 'ItemForm', noValidate: true},
+                                        
+                        React.createElement('input', {
+                            type: 'text',
+                            className: errors.item && 'ItemForm-error',
+                            placeholder: 'To-Do item',
+                            onInput: this.onItemInput,
+                            value: this.props.value.item,
+                        }),
+                                        
+                React.createElement('button', {type: 'submit'}, "Add Item")
+              )
+            );
+          },
+        });
+
+
+        var ToDoItem = React.createClass({
+          PropTypes: {
+            item: React.PropTypes.string.isRequired,
+          },
+
+          render: function() {
+            return (
+              React.createElement('li', {className: 'ToDoItem'},
+                React.createElement('h2', {className: 'ToDoItem-item'}, this.props.item)
+              )
+            );
+          },
+        });
+
+
+        var ItemView = React.createClass({
+          PropTypes: {
+            items: React.PropTypes.array.isRequired,
+            newItem: React.PropTypes.object.isRequired,
+            onNewItemChange: React.PropTypes.func.isRequired,
+            onNewItemSubmit: React.PropTypes.func.isRequired,
+          },
+
+          render: function() {
+            var ItemElements = this.props.items
+              .map(function(item) {return React.createElement(ToDoItem, item);
+              });
+          
+            return(
+              React.createElement('div', {className: 'ItemView'},
+                React.createElement('h1', {className: 'ItemView-title'}, "To-Do Items"),
+                React.createElement('ul', {className: 'ItemView-list'}, ItemElements),
+                React.createElement(ItemForm, {value: this.props.newItem, onChange: this.props.onNewItemChange,
+                  onSubmit: this.props.onNewItemSubmit, 
+                })
+              )
+            );
+          },
+      });
+
+    var ITEM_TEMPLATE = {item: "", errors: null};
+
+
+
+
+    var state = {};
+
+    function setState(changes) {
+      Object.assign(state, changes); 
+
+      ReactDOM.render(React.createElement(ItemView, Object.assign({}, state, {
+        onNewItemChange: updateNewItem,
+        onNewItemSubmit: submitNewItem,
+      })),
+      document.getElementById('ToDo-app')
+      );
+    }
+
+    setState({
+      items: [
+      {key: 1, item: "Pay the internet bill"},
+        {key: 2, item: "Call the team for conference"},
+        ],
+        newItem: Object.assign({}, ITEM_TEMPLATE),
+    });
+
+
+    function updateNewItem(item) {
+        setState({ newItem: item});
+    }
+
+
+    function submitNewItem() {
+        var item = Object.assign({}, state.newItem, {key: state.items.length + 1, errors: {}});
+
+        if (!contact.item) {
+            item.errors.item = ["Please enter your To-Do item"];
+        }
+
+        setState(
+            Object.keys(item.errors).length === 0
+            ? {
+                newItem: Object.assign({}, ITEM_TEMPLATE),
+                items: state.items.slice(0).concat(item),
+            }
+            : { newItem: item }
+        );
+    }
+
+    </script>
+  </body>
+</html>
