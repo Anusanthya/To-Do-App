@@ -90,56 +90,53 @@
               )
             );
           },
-      });
-
-    var ITEM_TEMPLATE = {item: "", errors: null};
+        });
 
 
+        var ITEM_TEMPLATE = {item: "", errors: null};
 
 
-    var state = {};
-
-    function setState(changes) {
-      Object.assign(state, changes); 
-
-      ReactDOM.render(React.createElement(ItemView, Object.assign({}, state, {
-        onNewItemChange: updateNewItem,
-        onNewItemSubmit: submitNewItem,
-      })),
-      document.getElementById('ToDo-app')
-      );
-    }
-
-    setState({
-      items: [
-      {key: 1, item: "Pay the internet bill"},
-        {key: 2, item: "Call the team for conference"},
-        ],
-        newItem: Object.assign({}, ITEM_TEMPLATE),
-    });
+        var state = {};
+        function setState(changes) {
+          Object.assign(state, changes);
+          ReactDOM.render(React.createElement(ItemView, Object.assign({}, state, {
+            onNewItemChange: updateNewItem,
+            onNewItemSubmit: submitNewItem,
+          })),
+          document.getElementById('ToDo-app')
+          );
+        };
 
 
-    function updateNewItem(item) {
-        setState({ newItem: item});
-    }
+        setState({
+          items: [
+          {key: 1, item: "Pay the internet bill"},
+          {key: 2, item: "Call the team for conference"},
+          ],
+          newItem: Object.assign({}, ITEM_TEMPLATE),
+        });
 
 
-    function submitNewItem() {
-        var item = Object.assign({}, state.newItem, {key: state.items.length + 1, errors: {}});
+        function updateNewItem(item) {
+          setState({ newItem: item});
+        };
 
-        if (!contact.item) {
+
+        function submitNewItem() {
+          var item = Object.assign({}, state.newItem, {key: state.items.length + 1, errors: {}});
+          if (!item.item) {
             item.errors.item = ["Please enter your To-Do item"];
-        }
+          }
 
-        setState(
+          setState(
             Object.keys(item.errors).length === 0
             ? {
-                newItem: Object.assign({}, ITEM_TEMPLATE),
-                items: state.items.slice(0).concat(item),
+            newItem: Object.assign({}, ITEM_TEMPLATE),
+            items: state.items.slice(0).concat(item),
             }
             : { newItem: item }
-        );
-    }
+          );
+        };
 
     </script>
   </body>
