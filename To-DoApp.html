@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>To-Do app</title>
-  </head>
-  <body>
+<head>
+  <meta name="viewport" content="width=device-width">
+  <script src="https://cdn.rawgit.com/zloirock/core-js/master/client/shim.min.js"></script>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="To-DoApp.css">
+  <title>To-Do app</title>
+</head>
+<body>
     <div id="ToDo-app"></div>
 
     <script src="https://cdn.jsdelivr.net/react/0.14.0-rc1/react.js"></script>
     <script src="https://cdn.jsdelivr.net/react/0.14.0-rc1/react-dom.js"></script>
     <script>
 
-
+      
         var ItemForm = React.createClass({
           PropTypes: {
             value: React.PropTypes.object.isRequired,
@@ -60,14 +63,15 @@
           render: function() {
             return (
               React.createElement('li', {className: 'ToDoItem'},
-                React.createElement('h2', {className: 'ToDoItem-item'}, this.props.item)
+                React.createElement('h2', {className: 'ToDoItem-item'}, this.props.item),
+                React.createElement('button', {type: 'submit'}, "Delete")
               )
             );
           },
         });
 
 
-        var ItemView = React.createClass({
+        var ItemsView = React.createClass({
           PropTypes: {
             items: React.PropTypes.array.isRequired,
             newItem: React.PropTypes.object.isRequired,
@@ -77,7 +81,7 @@
 
           render: function() {
             var ItemElements = this.props.items
-              .map(function(item) {return React.createElement(ToDoItem, item);
+              .map(function(item) { return React.createElement(ToDoItem, item);
               });
           
             return(
@@ -95,27 +99,7 @@
 
         var ITEM_TEMPLATE = {item: "", errors: null};
 
-
-        var state = {};
-        function setState(changes) {
-          Object.assign(state, changes);
-          ReactDOM.render(React.createElement(ItemView, Object.assign({}, state, {
-            onNewItemChange: updateNewItem,
-            onNewItemSubmit: submitNewItem,
-          })),
-          document.getElementById('ToDo-app')
-          );
-        };
-
-
-        setState({
-          items: [
-          {key: 1, item: "Pay the internet bill"},
-          {key: 2, item: "Call the team for conference"},
-          ],
-          newItem: Object.assign({}, ITEM_TEMPLATE),
-        });
-
+      
 
         function updateNewItem(item) {
           setState({ newItem: item});
@@ -138,6 +122,54 @@
           );
         };
 
+
+        function navigated() {
+          setState({
+            location: window.location.hash});
+        }
+      
+      
+        var state = {
+          items: [
+            {key: 1, item: "Pay the internet bill"},
+            {key: 2, item: "Call the team for conference"},
+          ],
+          newItem: Object.assign({}, ITEM_TEMPLATE),
+          location: window.location.hash
+        };
+      
+      
+        function setState(changes) {
+          var component;
+          
+          Object.assign(state, changes);
+          
+          switch (state.location) {
+            case '#/items':
+              component = React.createElement(ItemsView, Object.assign({}, state, {
+                onNewItemChange: updateNewItem,
+                onNewItemSubmit: submitNewItem,
+              }));
+              break;
+              
+            default:
+              component = React.createElement('div', {}, 
+                React.createElement('h1', {}, "Let's get this Done!"),
+                React.createElement('a', {href: '#/items'}, "To Do Items")
+              );
+          }
+                                                                      
+          ReactDOM.render(component, document.getElementById('ToDo-app'));
+        };
+      
+        // Handle browser navigation events
+        window.addEventListener('hashchange', navigated, false);
+  
+      
+        // Start the app      
+        navigated();
+
     </script>
-  </body>
+
+</body>
 </html>
